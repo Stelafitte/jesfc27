@@ -65,14 +65,17 @@
   .badge-rescue { background: var(--warn-bg); color: var(--warn); }
   .badge-moved { background: #EAF2E3; color: #2E6B1F; }
   .muted { color: var(--gray); font-size: 12px; }
-  .abstract-title.has-popup { cursor: help; border-bottom: 1px dotted var(--info); }
-  .abstract-popup { position: fixed; z-index: 100; max-width: 480px; max-height: 70vh; overflow-y: auto; background: white; border: 1px solid #ccd3da; border-radius: 8px; box-shadow: 0 6px 24px rgba(0,0,0,.18); padding: 16px 18px; font-size: 12.5px; line-height: 1.5; display: none; }
-  .abstract-popup.open { display: block; }
-  .abstract-popup h4 { margin: 0 0 6px; font-size: 13.5px; color: var(--blue); }
-  .abstract-popup .authors { font-style: italic; color: #555; margin-bottom: 10px; font-size: 11.5px; }
-  .abstract-popup .sec { margin-bottom: 8px; }
-  .abstract-popup .sec b { color: var(--info); text-transform: uppercase; font-size: 10.5px; letter-spacing: .03em; }
-  .abstract-popup .score-line { font-size: 11px; color: var(--gray); margin-bottom: 8px; }
+  .abstract-title.has-popup { cursor: pointer; border-bottom: 1px dotted var(--info); }
+  .abstract-popup-overlay { position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,.45); display: none; align-items: center; justify-content: center; padding: 24px; }
+  .abstract-popup-overlay.open { display: flex; }
+  .abstract-popup { position: relative; width: min(680px, 94vw); max-height: 88vh; overflow-y: auto; background: white; border: 1px solid #ccd3da; border-radius: 10px; box-shadow: 0 10px 40px rgba(0,0,0,.28); padding: 22px 26px 24px; font-size: 13px; line-height: 1.55; }
+  .abstract-popup h4 { margin: 0 6px 8px 0; font-size: 15px; color: var(--blue); padding-right: 32px; }
+  .abstract-popup .authors { font-style: italic; color: #555; margin-bottom: 12px; font-size: 12px; }
+  .abstract-popup .sec { margin-bottom: 10px; }
+  .abstract-popup .sec b { color: var(--info); text-transform: uppercase; font-size: 11px; letter-spacing: .03em; }
+  .abstract-popup .score-line { font-size: 11.5px; color: var(--gray); margin-bottom: 10px; }
+  .abstract-popup-close { position: absolute; top: 12px; right: 14px; border: none; background: #eef1f4; color: #333; width: 28px; height: 28px; border-radius: 6px; font-size: 17px; line-height: 1; cursor: pointer; }
+  .abstract-popup-close:hover { background: #e0e4e8; }
   .move-select { font-size: 11.5px; border: 1px solid #ccc; border-radius: 4px; padding: 2px 4px; max-width: 150px; }
   .toolbar { position: sticky; top: 0; z-index: 20; background: white; border-bottom: 1px solid #e3e5e8; padding: 10px 32px; display: flex; gap: 10px; align-items: center; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
   .toolbar .spacer { flex: 1; }
@@ -104,7 +107,7 @@
     section.theme-section { page-break-inside: avoid; }
     .toolbar { display: none; }
     .abstract-check, .move-select { display: none; }
-    .abstract-popup { display: none !important; }
+    .abstract-popup-overlay { display: none !important; }
   }
 </style>
 </head>
@@ -1237,7 +1240,7 @@
   </div>
 </div>
 
-<div class="abstract-popup" id="abstract-popup"></div>
+<div class="abstract-popup-overlay" id="abstract-popup-overlay"><div class="abstract-popup" id="abstract-popup"><button type="button" class="abstract-popup-close" id="abstract-popup-close" aria-label="Fermer">×</button><div id="abstract-popup-content"></div></div></div>
 
 <template id="move-options-template"><option value="">— Déplacer vers... —</option><optgroup label="01 - Maladie coronaire"><option value="CO--01-Maladie-coronaire--Jeudi--1">[CO] Jeudi — Session 1</option><option value="CO--01-Maladie-coronaire--Vendredi--1">[CO] Vendredi — Session 1</option><option value="HUB--01-Maladie-coronaire--Mercredi--1">[HUB] Mercredi — Session 1</option><option value="HUB--01-Maladie-coronaire--Jeudi--1">[HUB] Jeudi — Session 1</option><option value="HUB--01-Maladie-coronaire--Vendredi--1">[HUB] Vendredi — Session 1</option></optgroup><optgroup label="02 - Insuffisance cardiaque et cardiomyopathies"><option value="CO--02-Insuffisance-cardiaque-et-cardiomyopathies--Mercredi--1">[CO] Mercredi — Session 1</option><option value="CO--02-Insuffisance-cardiaque-et-cardiomyopathies--Jeudi--1">[CO] Jeudi — Session 1</option><option value="CO--02-Insuffisance-cardiaque-et-cardiomyopathies--Vendredi--1">[CO] Vendredi — Session 1</option><option value="HUB--02-Insuffisance-cardiaque-et-cardiomyopathies--Mercredi--1">[HUB] Mercredi — Session 1</option><option value="HUB--02-Insuffisance-cardiaque-et-cardiomyopathies--Jeudi--1">[HUB] Jeudi — Session 1</option><option value="HUB--02-Insuffisance-cardiaque-et-cardiomyopathies--Vendredi--1">[HUB] Vendredi — Session 1</option></optgroup><optgroup label="03 - Echocardiographie et imagerie"><option value="CO--03-Echocardiographie-et-imagerie--Jeudi--1">[CO] Jeudi — Session 1</option><option value="CO--03-Echocardiographie-et-imagerie--Vendredi--1">[CO] Vendredi — Session 1</option><option value="HUB--03-Echocardiographie-et-imagerie--Mercredi--1">[HUB] Mercredi — Session 1</option></optgroup><optgroup label="04 - Valvulopathies"><option value="CO--04-Valvulopathies--Mercredi--1">[CO] Mercredi — Session 1</option><option value="CO--04-Valvulopathies--Jeudi--1">[CO] Jeudi — Session 1</option><option value="HUB--04-Valvulopathies--Mercredi--1">[HUB] Mercredi — Session 1</option><option value="HUB--04-Valvulopathies--Jeudi--1">[HUB] Jeudi — Session 1</option><option value="HUB--04-Valvulopathies--Vendredi--1">[HUB] Vendredi — Session 1</option></optgroup><optgroup label="05 - Rythmologie et stimulation cardiaque"><option value="CO--05-Rythmologie-et-stimulation-cardiaque--Jeudi--1">[CO] Jeudi — Session 1</option><option value="CO--05-Rythmologie-et-stimulation-cardiaque--Vendredi--1">[CO] Vendredi — Session 1</option><option value="HUB--05-Rythmologie-et-stimulation-cardiaque--Jeudi--1">[HUB] Jeudi — Session 1</option><option value="HUB--05-Rythmologie-et-stimulation-cardiaque--Vendredi--1">[HUB] Vendredi — Session 1</option></optgroup><optgroup label="06 - HTA/Vasculaire/ Métabolisme"><option value="CO--06-HTA-Vasculaire-M-tabolisme--Vendredi--1">[CO] Vendredi — Session 1</option><option value="HUB--06-HTA-Vasculaire-M-tabolisme--Jeudi--1">[HUB] Jeudi — Session 1</option></optgroup><optgroup label="07 - Recherche fondamentale &amp; translationnelle"><option value="HUB--07-Recherche-fondamentale-translationnelle--Jeudi--1">[HUB] Jeudi — Session 1</option><option value="HUB--07-Recherche-fondamentale-translationnelle--Vendredi--1">[HUB] Vendredi — Session 1</option></optgroup><optgroup label="08 - Epidémiologie &amp; prévention, Réadaptation &amp; sport, Sommeil"><option value="CO--08-Epid-miologie-pr-vention-R-adaptation-sport-Sommeil--Jeudi--1">[CO] Jeudi — Session 1</option><option value="CO--08-Epid-miologie-pr-vention-R-adaptation-sport-Sommeil--Vendredi--1">[CO] Vendredi — Session 1</option><option value="HUB--08-Epid-miologie-pr-vention-R-adaptation-sport-Sommeil--Jeudi--1">[HUB] Jeudi — Session 1</option><option value="HUB--08-Epid-miologie-pr-vention-R-adaptation-sport-Sommeil--Jeudi--2">[HUB] Jeudi — Session 2</option><option value="HUB--08-Epid-miologie-pr-vention-R-adaptation-sport-Sommeil--Vendredi--1">[HUB] Vendredi — Session 1</option></optgroup><optgroup label="09 - Cardiopédiatrie et cardiopathies congénitales"><option value="CO--09-Cardiop-diatrie-et-cardiopathies-cong-nitales--Jeudi--1">[CO] Jeudi — Session 1</option><option value="HUB--09-Cardiop-diatrie-et-cardiopathies-cong-nitales--Jeudi--1">[HUB] Jeudi — Session 1</option><option value="HUB--09-Cardiop-diatrie-et-cardiopathies-cong-nitales--Vendredi--1">[HUB] Vendredi — Session 1</option></optgroup><optgroup label="11 - Paramédical"><option value="HUB--11-Param-dical--Vendredi--1">[HUB] Vendredi — Session 1</option></optgroup><optgroup label="12 - Urgences et soins cardiaques intensifs"><option value="HUB--12-Urgences-et-soins-cardiaques-intensifs--Jeudi--1">[HUB] Jeudi — Session 1</option></optgroup><optgroup label="13 - Cardio-oncologie"><option value="HUB--13-Cardio-oncologie--Vendredi--1">[HUB] Vendredi — Session 1</option></optgroup><optgroup label="14 - Cardiologie tropicale"><option value="HUB--14-Cardiologie-tropicale--Jeudi--1">[HUB] Jeudi — Session 1</option></optgroup><optgroup label="15 - Santé digitale"><option value="HUB--15-Sant-digitale--Jeudi--1">[HUB] Jeudi — Session 1</option><option value="HUB--15-Sant-digitale--Vendredi--1">[HUB] Vendredi — Session 1</option></optgroup><optgroup label="10+16 - Cardiologie générale/Ethique + Enseignement (hors grille)"><option value="HUB--10-16-Cardiologie-g-n-rale-Ethique-Enseignement-hors-grille--A-programmer--1">[HUB] A programmer — Session 1</option></optgroup></template>
 
@@ -1339,40 +1342,30 @@
     return out;
   }
 
-  var popup = document.getElementById('abstract-popup');
-  var currentPopupRef = null;
+  var popupOverlay = document.getElementById('abstract-popup-overlay');
+  var popupContent = document.getElementById('abstract-popup-content');
 
-  function positionPopup(evt) {
-    var margin = 16;
-    var w = popup.offsetWidth || 480;
-    var h = popup.offsetHeight || 200;
-    var x = evt.clientX + margin;
-    var y = evt.clientY + margin;
-    if (x + w > window.innerWidth - 8) x = evt.clientX - w - margin;
-    if (y + h > window.innerHeight - 8) y = Math.max(8, window.innerHeight - h - 8);
-    popup.style.left = Math.max(8, x) + 'px';
-    popup.style.top = Math.max(8, y) + 'px';
+  function openAbstractPopup(ref) {
+    popupContent.innerHTML = renderAbstractPopup(ref);
+    popupOverlay.classList.add('open');
+    popupOverlay.querySelector('.abstract-popup').scrollTop = 0;
+  }
+  function closeAbstractPopup() {
+    popupOverlay.classList.remove('open');
   }
 
-  document.addEventListener('mouseover', function(e) {
+  document.addEventListener('click', function(e) {
     var el = e.target.closest ? e.target.closest('.abstract-title.has-popup') : null;
-    if (!el) return;
-    var ref = el.getAttribute('data-ref');
-    currentPopupRef = ref;
-    popup.innerHTML = renderAbstractPopup(ref);
-    popup.classList.add('open');
-    positionPopup(e);
+    if (el) {
+      openAbstractPopup(el.getAttribute('data-ref'));
+      return;
+    }
+    if (e.target.id === 'abstract-popup-close' || e.target === popupOverlay) {
+      closeAbstractPopup();
+    }
   });
-  document.addEventListener('mousemove', function(e) {
-    if (!popup.classList.contains('open')) return;
-    var el = e.target.closest ? e.target.closest('.abstract-title.has-popup') : null;
-    if (el && el.getAttribute('data-ref') === currentPopupRef) positionPopup(e);
-  });
-  document.addEventListener('mouseout', function(e) {
-    var el = e.target.closest ? e.target.closest('.abstract-title.has-popup') : null;
-    if (!el) return;
-    popup.classList.remove('open');
-    currentPopupRef = null;
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && popupOverlay.classList.contains('open')) closeAbstractPopup();
   });
 
   function allSessions() {
