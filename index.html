@@ -1731,16 +1731,19 @@
     sessionStorage.setItem('jesfc27-just-reset', '1');
     var reviewer = getReviewer();
     if (SYNC_ENABLED && reviewer.name) {
-      setSyncStatus('Réinitialisation partagée…');
-      fetch(SYNC_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ action: 'reset', reviewer: reviewer.name })
-      }).then(function() { location.reload(); })
-        .catch(function() { location.reload(); });
-    } else {
-      location.reload();
+      // On lance l'effacement côté Sheet sans bloquer le rechargement de la page.
+      // keepalive permet à la requête de se terminer même après le reload.
+      try {
+        fetch(SYNC_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ action: 'reset', reviewer: reviewer.name }),
+          keepalive: true
+        });
+      } catch (e) {}
     }
+    // Rechargement immédiat et systématique, quel que soit le cas.
+    location.reload();
   });
 
   document.getElementById('modal-copy').addEventListener('click', function() {
